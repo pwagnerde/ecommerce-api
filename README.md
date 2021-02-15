@@ -19,7 +19,7 @@ The purpose of this project is to help me to better understand Node.js, Express.
 
 ## Screenshots
 
-![Example screenshot]()
+![Example screenshot](./img/screenshot.png)
 
 ## Technologies
 
