@@ -58,7 +58,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /products/{categoryCode}:
+  /products/{category_id}:
     # our controller name
     x-swagger-router-controller: products
     get:
@@ -66,7 +66,7 @@ paths:
       description: Get the products list for a specific product category
       # define the type of response for Success "200" and Error
       parameters:
-        - name: categoryCode
+        - name: category_id
           type: string
           in: path
           required: true
@@ -129,13 +129,10 @@ definitions:
             description:
               type: string
               maxLength: 500
-            categoryCode:
-              type: string
-              minLength: 3
-              maxLength: 3
-            vendorCode:
-              type: string
-              maxLength: 50
+            category_id:
+              type: integer
+            vendor_id:
+              type: integer
             sku:
               type: string
               maxLength: 50
@@ -146,15 +143,15 @@ definitions:
             - id
             - name
             - description
-            - categoryCode
-            - vendorCode
+            - category_id
+            - vendor_id
             - sku
             - price
   GetProductResponse:
     required:
       - product
     properties:
-      # The array of products
+      # The single product object
       product:
         type: object
         properties:
@@ -167,13 +164,10 @@ definitions:
           description:
             type: string
             maxLength: 500
-          categoryCode:
-            type: string
-            minLength: 3
-            maxLength: 3
-          vendorCode:
-            type: string
-            maxLength: 50
+          category_id:
+            type: integer
+          vendor_id:
+            type: integer
           sku:
             type: string
             maxLength: 50
@@ -184,8 +178,8 @@ definitions:
            - id
            - name
            - description
-           - categoryCode
-           - vendorCode
+           - category_id
+           - vendor_id
            - sku
            - price
   ErrorResponse:

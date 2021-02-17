@@ -1,31 +1,49 @@
 "use strict";
 // Include our "db"
-const db = require("../../db/db.js")();
+const db = require("../../db");
+
 // Exports all the functions to perform on the db
-module.exports = { getAll, getOne, getCategory };
+module.exports = { getAll, getCategory, getOne };
 
 //GET /products operationId
-function getAll(req, res, next) {
-  res.json({ products: db.findItems() });
+async function getAll(req, res, next) {
+  const { rows } = await db.query(
+    "SELECT id,name,description,category_id,vendor_id,sku,price FROM public.product"
+  );
+  if (rows) {
+    res.json({ products: rows });
+  } else {
+    res.status(204).send();
+  }
 }
 
 //GET /products/{categoryCode} operationId
-function getCategory(req, res, next) {
-  const category = req.swagger.params.categoryCode.value; //req.swagger contains the path parameters
-  let products = db.findCategoryItems(category);
-  if (products) {
-    res.json(products);
+async function getCategory(req, res, next) {
+  const categoryCode = req.swagger.params.category_id.value; //req.swagger contains the path parameters
+  const {
+    rows,
+  } = await db.query(
+    "SELECT id,name,description,category_id,vendor_id,sku,price FROM public.product WHERE category_id=$1",
+    [categoryCode]
+  );
+  if (rows) {
+    res.json({ products: rows });
   } else {
     res.status(204).send();
   }
 }
 
 //GET /products/item/{id} operationId
-function getOne(req, res, next) {
-  const id = req.swagger.params.productId.value; //req.swagger contains the path parameters
-  let product = db.findItems(id);
-  if (product) {
-    res.json(product);
+async function getOne(req, res, next) {
+  const productId = req.swagger.params.productId.value; //req.swagger contains the path parameters
+  const {
+    rows,
+  } = await db.query(
+    "SELECT id,name,description,category_id,vendor_id,sku,price FROM public.product WHERE id=$1",
+    [productId]
+  );
+  if (rows) {
+    res.json({ products: rows });
   } else {
     res.status(204).send();
   }
