@@ -42,11 +42,108 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /users:
+    # our controller name
+    x-swagger-router-controller: users
+    get:
+      tags:
+      - "User"
+      - "GET"
+      operationId: getUsersAll
+      description: Get the full users list
+      # define the type of response for Success "200" and Error
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetUsersListResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /users/{userId}:
+    # our controller name
+    x-swagger-router-controller: users
+    get:
+      tags:
+      - "User"
+      - "GET"
+      operationId: getUser
+      description: Get a single user
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: userId
+          type: integer
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetUserResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    put:
+      tags:
+      - "User"
+      - "PUT"
+      operationId: updateUser
+      description: Update a single user
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: userId
+          type: integer
+          in: path
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/GetUserResponse"
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /register:
+    # our controller name
+    x-swagger-router-controller: users
+    post:
+      tags:
+      - "User"
+      - "POST"
+      operationId: createUser
+      description: Update a single user
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/NewUserRequest"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetUserResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /products:
     # our controller name
     x-swagger-router-controller: products
     get:
-      operationId: getAll
+      tags:
+      - "Product"
+      - "GET"
+      operationId: getProductsAll
       description: Get the full products list
       # define the type of response for Success "200" and Error
       responses:
@@ -62,7 +159,10 @@ paths:
     # our controller name
     x-swagger-router-controller: products
     get:
-      operationId: getCategory
+      tags:
+      - "Product"
+      - "GET"
+      operationId: getProductsCategory
       description: Get the products list for a specific product category
       # define the type of response for Success "200" and Error
       parameters:
@@ -83,7 +183,10 @@ paths:
     # our controller name
     x-swagger-router-controller: products
     get:
-      operationId: getOne
+      tags:
+      - "Product"
+      - "GET"
+      operationId: getProduct
       description: Get a single product
       # define the type of response for Success "200" and Error
       parameters:
@@ -110,6 +213,99 @@ definitions:
     properties:
       message:
         type: string
+  GetUsersListResponse:
+    required:
+      - users
+    properties:
+      # The array of users
+      users:
+        type: array
+        items: 
+          type: object
+          properties:
+            id:
+              type: integer
+              minimum: 1
+            first_name:
+              type: string
+              maxLength: 100
+            middle_name:
+              type: string
+              maxLength: 50
+            last_name:
+              type: string
+              maxLength: 150
+            email_address:
+              type: string
+              maxLength: 200
+            password_hash:
+              type: string
+              maxLength: 256
+            locked_out:
+              type: boolean
+          required:
+            - id
+            - first_name
+            - last_name
+            - email_address
+            - password_hash
+            - locked_out
+  GetUserResponse:
+    required:
+      - user
+    properties:
+      # The single user object
+      user:
+        type: object
+        properties:
+          id:
+            type: integer
+            minimum: 1
+          first_name:
+            type: string
+            maxLength: 100
+          middle_name:
+            type: string
+            maxLength: 50
+          last_name:
+            type: string
+            maxLength: 150
+          email_address:
+            type: string
+            maxLength: 200
+        required:
+           - id
+           - first_name
+           - last_name
+           - email_address
+  NewUserRequest:
+    required:
+      - user
+    properties:
+      # The single user object
+      user:
+        type: object
+        properties:
+          first_name:
+            type: string
+            maxLength: 100
+          middle_name:
+            type: string
+            maxLength: 50
+          last_name:
+            type: string
+            maxLength: 150
+          email_address:
+            type: string
+            maxLength: 200
+          password:
+            type: string
+            maxLength: 256
+        required:
+           - first_name
+           - last_name
+           - email_address
+           - password
   GetProductsListResponse:
     required:
       - products
@@ -182,6 +378,12 @@ definitions:
            - vendor_id
            - sku
            - price
+  SuccessResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
   ErrorResponse:
     required:
       - message
