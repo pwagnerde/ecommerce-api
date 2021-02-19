@@ -326,6 +326,29 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /carts/{cart_id}/checkout:
+    # our controller name
+    x-swagger-router-controller: carts
+    get:
+      tags:
+      - "Shopping Cart"
+      operationId: orderCartItems
+      description: Checkout an existing shopping cart
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: cart_id
+          type: integer
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
