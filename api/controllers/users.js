@@ -9,7 +9,7 @@ module.exports = { getUsersAll, getUser, updateUser, createUser };
 async function getUsersAll(req, res, next) {
   try {
     const { rows } = await db.query(
-      "SELECT customer.id as id, first_name, middle_name, last_name, email_address, password_hash, locked_out FROM public.customer as customer JOIN public.customer_login as customer_login ON customer.id = customer_login.customer_id"
+      "SELECT customer.id as id, first_name, middle_name, last_name, email_address, password_hash, locked_out, created_at FROM public.customer as customer JOIN public.customer_login as customer_login ON customer.id = customer_login.customer_id"
     );
     if (rows[0]) {
       res.status(200).json({ users: rows });

@@ -22,6 +22,8 @@ paths:
     # binds a127 app logic to a route
     x-swagger-router-controller: hello_world
     get:
+      tags:
+      - "Demo"
       description: Returns 'Hello' to the caller
       # used as the method name of the controller
       operationId: hello
@@ -48,7 +50,6 @@ paths:
     get:
       tags:
       - "User"
-      - "GET"
       operationId: getUsersAll
       description: Get the full users list
       # define the type of response for Success "200" and Error
@@ -67,7 +68,6 @@ paths:
     get:
       tags:
       - "User"
-      - "GET"
       operationId: getUser
       description: Get a single user
       # define the type of response for Success "200" and Error
@@ -88,7 +88,6 @@ paths:
     put:
       tags:
       - "User"
-      - "PUT"
       operationId: updateUser
       description: Update a single user
       # define the type of response for Success "200" and Error
@@ -117,7 +116,6 @@ paths:
     post:
       tags:
       - "User"
-      - "POST"
       operationId: createUser
       description: Update a single user
       # define the type of response for Success "200" and Error
@@ -142,7 +140,6 @@ paths:
     get:
       tags:
       - "Product"
-      - "GET"
       operationId: getProductsAll
       description: Get the full products list
       # define the type of response for Success "200" and Error
@@ -161,7 +158,6 @@ paths:
     get:
       tags:
       - "Product"
-      - "GET"
       operationId: getProductsCategory
       description: Get the products list for a specific product category
       # define the type of response for Success "200" and Error
@@ -185,7 +181,6 @@ paths:
     get:
       tags:
       - "Product"
-      - "GET"
       operationId: getProduct
       description: Get a single product
       # define the type of response for Success "200" and Error
@@ -199,6 +194,134 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/GetProductResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /orders:
+    # our controller name
+    x-swagger-router-controller: orders
+    get:
+      tags:
+      - "Order"
+      operationId: getOrdersAll
+      description: Get the full order list
+      # define the type of response for Success "200" and Error
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetOrderListResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /orders/{customer_id}:
+    # our controller name
+    x-swagger-router-controller: orders
+    get:
+      tags:
+      - "Order"
+      operationId: getOrdersCustomer
+      description: Get the order list for a specific customer
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: customer_id
+          type: integer
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetOrderListResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /orders/{order_id}/items:
+    # our controller name
+    x-swagger-router-controller: orders
+    get:
+      tags:
+      - "Order"
+      operationId: getOrderItems
+      description: Get a single order with all order items
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: order_id
+          type: integer
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetItemsResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /carts:
+    # our controller name
+    x-swagger-router-controller: carts
+    get:
+      tags:
+      - "Shopping Cart"
+      operationId: getCartsAll
+      description: Get the full shopping carts list
+      # define the type of response for Success "200" and Error
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetCartListResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /carts/{customer_id}:
+    # our controller name
+    x-swagger-router-controller: carts
+    get:
+      tags:
+      - "Shopping Cart"
+      operationId: getCartsCustomer
+      description: Get the shopping cart list for a specific customer
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: customer_id
+          type: integer
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetCartListResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /carts/{cart_id}/items:
+    # our controller name
+    x-swagger-router-controller: carts
+    get:
+      tags:
+      - "Shopping Cart"
+      operationId: getCartItems
+      description: Get a single shopping cart with all items
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: cart_id
+          type: integer
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetItemsResponse"
         default:
           description: Error
           schema:
@@ -243,6 +366,9 @@ definitions:
               maxLength: 256
             locked_out:
               type: boolean
+            created_at:
+              type: string
+              format: date-time
           required:
             - id
             - first_name
@@ -250,6 +376,7 @@ definitions:
             - email_address
             - password_hash
             - locked_out
+            - created_at
   GetUserResponse:
     required:
       - user
@@ -378,6 +505,92 @@ definitions:
            - vendor_id
            - sku
            - price
+  GetOrderListResponse:
+    required:
+      - orders
+    properties:
+      # The array of orders
+      orders:
+        type: array
+        items: 
+          type: object
+          properties:
+            order_id:
+              type: integer
+              minimum: 1
+            customer_id:
+              type: integer
+            status_code_id:
+              type: integer
+              minimum: 1
+            customer_comments:
+              type: string
+              maxLength: 300
+            created_at:
+              type: string
+              format: date-time
+          required:
+            - order_id
+            - customer_id
+            - status_code_id
+            - created_at
+  GetItemsResponse:
+    required:
+      - order
+    properties:
+      # The array of order items
+      order:
+        type: array
+        items: 
+          type: object
+          properties:
+            item_id:
+              type: integer
+              minimum: 1
+            product_id:
+              type: integer
+              minimum: 1
+            product_name:
+              type: string
+              maxLength: 100
+            price:
+              type: number
+              minimum: 0
+            quantity:
+              type: number
+              minimum: 0
+          required:
+            - item_id
+            - product_id
+            - product_name
+            - price
+            - quantity
+  GetCartListResponse:
+    required:
+      - carts
+    properties:
+      # The array of orders
+      carts:
+        type: array
+        items: 
+          type: object
+          properties:
+            cart_id:
+              type: integer
+              minimum: 1
+            customer_id:
+              type: integer
+            status_code_id:
+              type: integer
+              minimum: 1
+            created_at:
+              type: string
+              format: date-time
+          required:
+            - cart_id
+            - customer_id
+            - status_code_id
+            - created_at
   SuccessResponse:
     required:
       - message
