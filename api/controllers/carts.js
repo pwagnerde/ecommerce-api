@@ -8,6 +8,8 @@ module.exports = {
   getCartsCustomer,
   getCartItems,
   orderCartItems,
+  addCartItems,
+  removeCartItems,
 };
 
 //GET /carts operationId
@@ -72,14 +74,51 @@ async function getCartItems(req, res, next) {
   }
 }
 
-//POST /carts/{cartId}/items?product_id={id} operationId
-async function addCartItems(req, res, next) {}
+//PUT /carts/{cartId}/items/add operationId
+async function addCartItems(req, res, next) {
+  const cartId = req.swagger.params.cart_id.value;
+  const productId = req.swagger.params.body.value.shopping_cart_item.product_id;
+  const productPrice = req.swagger.params.body.value.shopping_cart_item.price;
+  const productQty = req.swagger.params.body.value.shopping_cart_item.quantity;
+  try {
+    let result = await db.query(
+      "SELECT id FROM public.shopping_cart_item WHERE product_id = $1 AND shopping_cart_id = $2",
+      [productId, cartId]
+    );
+    if (result.rows[0]) {
+      // Update price & quantity
+      await db.query(
+        "UPDATE public.shopping_cart_item SET price = $1, quantity = $2 WHERE id = $3",
+        [productPrice, productQty, result.rows[0].id]
+      );
+      res
+        .status(200)
+        .json({ message: "Product quantity & price updated in shopping card" });
+    } else {
+      await db.query(
+        "INSERT INTO public.shopping_cart_item (shopping_cart_id, product_id, price, quantity) VALUES ($1, $2, $3,$4)",
+        [cartId, productId, productPrice, productQty]
+      );
+      res.status(200).json({ message: "New product added to shopping card" });
+    }
+  } catch (e) {
+    res.status(500).json({ message: e });
+  }
+}
 
-//PUT /carts/{cartId}/items?product_id={id} operationId
-async function updateCartItems(req, res, next) {}
-
-//DELETE /carts/{cartId}/items?product_id={id} operationId
-async function removeCartItems(req, res, next) {}
+//DELETE /carts/{cartId}/items operationId
+async function removeCartItems(req, res, next) {
+  const cartId = req.swagger.params.cart_id.value; //req.swagger contains the path parameters
+  try {
+    await db.query(
+      "DELETE FROM public.shopping_cart_item WHERE shopping_cart_id = $1",
+      [cartId]
+    );
+    res.status(200).json({ message: "All shopping cart items removed" });
+  } catch (e) {
+    res.status(500).json({ message: e });
+  }
+}
 
 //POST /carts/{cartId}/checkout
 async function orderCartItems(req, res, next) {
@@ -91,6 +130,7 @@ async function orderCartItems(req, res, next) {
   const newShoppingCardStatus = 1; //open
   try {
     await db.query("BEGIN");
+    console.log("START");
     const {
       rows,
     } = await db.query(

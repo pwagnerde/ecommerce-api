@@ -326,6 +326,51 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    put:
+      tags:
+      - "Shopping Cart"
+      operationId: addCartItems
+      description: Add new product or update quantity of existing product
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: cart_id
+          type: integer
+          in: path
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ItemRequest"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+      - "Shopping Cart"
+      operationId: removeCartItems
+      description: Remove all shopping cart items
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: cart_id
+          type: integer
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetItemsResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /carts/{cart_id}/checkout:
     # our controller name
     x-swagger-router-controller: carts
@@ -588,6 +633,31 @@ definitions:
             - product_name
             - price
             - quantity
+  ItemRequest:
+    required:
+      - shopping_cart_item
+    properties:
+      # The array of order items
+      shopping_cart_item:
+        type: object
+        properties:
+          card_id:
+            type: integer
+            minimum: 1
+          product_id:
+            type: integer
+            minimum: 1
+          price:
+            type: number
+            minimum: 0
+          quantity:
+            type: number
+            minimum: 0
+        required:
+          - card_id
+          - product_id
+          - price
+          - quantity
   GetCartListResponse:
     required:
       - carts
